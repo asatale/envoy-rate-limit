@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/envoy-rate-limit/app/proto/hello-world"
+	pb "github.com/asatale/envoy-rate-limit/app/proto/hello-world"
 	"google.golang.org/grpc"
 )
 
