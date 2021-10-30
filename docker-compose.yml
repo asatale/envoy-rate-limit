@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  server:
+    image: grpc-server
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    command:
+      - ./server
+    networks:
+      - envoymesh
+     
+  client:
+    image: grpc-client
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    command:
+      - ./client
+      - -addr
+      - envoy:50051
+      - -reqs
+      - "10"
+      - -num_threads
+      - "10"
+    depends_on:
+      - envoy
+      - server
+    networks:
+      - envoymesh
+      
+  envoy:
+    image: envoyproxy/envoy:v1.14.1
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - envoymesh
+
+networks:
+  envoymesh: {}
