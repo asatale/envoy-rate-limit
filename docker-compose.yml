@@ -1,6 +1,15 @@
 version: "3.9"
 services:
-  server:
+  server-1:
+    image: grpc-server
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+    command:
+      - ./server
+    networks:
+      - envoymesh
+  server-2:
     image: grpc-server
     build:
       context: ./app
@@ -17,15 +26,20 @@ services:
       dockerfile: Dockerfile
     command:
       - ./client
-      - -addr
+      - -server_addr
       - envoy:50051
-      - -reqs
-      - "10"
       - -num_threads
+      - "100"
+      - -reqs_per_thread
+      - "50000"
+      - -burst_size
       - "10"
+      - -burst_interval
+      - "100"
     depends_on:
       - envoy
-      - server
+      - server-1
+      - server-2
     networks:
       - envoymesh
       

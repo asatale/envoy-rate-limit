@@ -21,7 +21,6 @@ func main() {
 	addr := flag.String("addr", "0.0.0.0:50051", "Server address string")
 	flag.Parse()
 
-	log.Printf("Server listening on %v", *addr)
 	lis, err := net.Listen("tcp", *addr)
 	if err != nil {
 		log.Fatalf("Failed to start listening: %v", err)
