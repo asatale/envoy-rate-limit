@@ -25,6 +25,8 @@ type clientConfig struct {
 	burst_interval int
 }
 
+var randomGen rand.Source
+
 func main() {
 	server_addr := flag.String("server_addr",
 		"localhost:50051",
@@ -50,6 +52,9 @@ func main() {
 	log.Printf("Waiting for servers to come up")
 	time.Sleep(STARTUP_TIMEOUT * time.Second)
 
+	// Initialize random number generator
+	randomGen = rand.NewSource(time.Now().UnixNano())
+
 	var wg sync.WaitGroup
 	for i := 0; i < *num_threads; i++ {
 		wg.Add(1)
@@ -66,9 +71,8 @@ func main() {
 }
 
 func randomize_start() {
-	s1 := rand.NewSource(time.Now().UnixNano())
-	r1 := rand.New(s1)
-	delay := time.Duration(r1.Intn(100))
+	r1 := rand.New(randomGen)
+	delay := time.Duration(r1.Intn(500))
 	time.Sleep(delay * time.Millisecond)
 }
 
@@ -95,8 +99,6 @@ func communicate(cfg *clientConfig, clientWg *sync.WaitGroup) {
 
 	clnt := pb.NewGreeterClient(conn)
 
-	limiter := time.Tick(time.Duration(cfg.burst_interval) * time.Millisecond)
-
 	for i, b := 0, 0; i < cfg.num_requests; i++ {
 		msgWg.Add(1)
 		go func(seqNum int, wgSync *sync.WaitGroup, cntLock *sync.Mutex) {
@@ -112,28 +114,25 @@ func communicate(cfg *clientConfig, clientWg *sync.WaitGroup) {
 			_, err := clnt.SayHello(ctx, &pb.HelloRequest{ClientName: cfg.thread_id,
 				SeqNum: int32(seqNum)})
 
+			cntLock.Lock()
+			defer cntLock.Unlock()
 			if err != nil {
 				log.Printf("RPC Error: %v", err)
-				cntLock.Lock()
 				errCnt = errCnt + 1
-				cntLock.Unlock()
-				return
 			} else {
-				cntLock.Lock()
 				successCnt = successCnt + 1
-				cntLock.Unlock()
+				now = time.Now()
+				end_msec := now.UnixMilli()
+				latencies[seqNum] = end_msec - start_msec
+				if latencies[seqNum] < 0 { // Time skew??
+					latencies[seqNum] = 0
+				}
 			}
 
-			now = time.Now()
-			end_msec := now.UnixMilli()
-			latencies[seqNum] = end_msec - start_msec
-			if latencies[seqNum] < 0 { // Time skew
-				latencies[seqNum] = 0
-			}
 		}(i, &msgWg, &cntLock)
 
 		if b == cfg.burst_size {
-			<-limiter
+			time.Sleep(time.Duration(cfg.burst_interval) * time.Millisecond)
 			b = 0
 		} else {
 			b = b + 1

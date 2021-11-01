@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
     command:
       - ./server
+      - -rsp_delay
+      - "10"
+      - -variance
+      - "2"
     networks:
       - envoymesh
   server-2:
@@ -16,6 +20,8 @@ services:
       dockerfile: Dockerfile
     command:
       - ./server
+      - -rsp_delay
+      - "20"      
     networks:
       - envoymesh
      
@@ -29,11 +35,11 @@ services:
       - -server_addr
       - envoy:50051
       - -num_threads
-      - "100"
+      - "30"
       - -reqs_per_thread
-      - "50000"
+      - "5000"
       - -burst_size
-      - "10"
+      - "20"
       - -burst_interval
       - "100"
     depends_on:
@@ -42,7 +48,6 @@ services:
       - server-2
     networks:
       - envoymesh
-      
   envoy:
     image: envoyproxy/envoy:v1.14.1
     ports:

@@ -35,7 +35,13 @@ static_resources:
       http2_protocol_options: {}
       hosts:
         - socket_address: { address: server-1, port_value: 50051 }
-        - socket_address: { address: server-2, port_value: 50051 }          
+        - socket_address: { address: server-2, port_value: 50051 }       
+      circuit_breakers:
+        thresholds:
+          - priority: default
+            max_connections: 1000 
+            max_pending_requests: 1000
+            max_requests: 1000
 admin:
   access_log_path: "/dev/null"
   address:
