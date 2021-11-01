@@ -1,20 +1,20 @@
 
 export ROOT_DIR := $(shell pwd)
 
-all: server client
+.PHONY:all
+all: app
 
+.PHONY: bin_dir
 bin_dir:
 	@mkdir -p ${ROOT_DIR}/bin
 
+.PHONY: proto
 proto:
 	@make -C app/proto
 
-
-server: bin_dir proto
-	@make -C app/server
-
-client: bin_dir proto
-	@make -C app/client
+.PHONY: app
+app: bin_dir proto
+	@make -C app
 
 clean:
 	@echo "Performing cleanup..."

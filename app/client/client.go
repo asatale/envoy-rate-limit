@@ -7,78 +7,141 @@ import (
 	pb "github.com/asatale/envoy-rate-limit/app/proto/hello_world"
 	"google.golang.org/grpc"
 	"log"
+	"math/rand"
 	"sync"
 	"time"
 )
 
+const (
+	STARTUP_TIMEOUT = 1 // 1 sec wait on startup before starting traffic
+	RPC_TIMEOUT     = 5 // 5 sec connection timeout
+)
+
 type clientConfig struct {
-	client_id    string
-	server_addr  string
-	num_requests int
+	thread_id      string
+	server_addr    string
+	num_requests   int
+	burst_size     int
+	burst_interval int
 }
 
+var randomGen rand.Source
+
 func main() {
-	addr := flag.String("addr", "localhost:50051", "Server address string")
-	reqs := flag.Int("reqs", 100, "Number of request sent by a client")
-	clients := flag.Int("clients", 1, "Number of clients")
+	server_addr := flag.String("server_addr",
+		"localhost:50051",
+		"Server address string.")
+
+	num_threads := flag.Int("num_threads",
+		10,
+		"Number of concurrent threads.")
+
+	reqs_per_thread := flag.Int("reqs_per_thread",
+		100,
+		"Total Number of request sent by a client.")
+
+	burst_size := flag.Int("burst_size",
+		100, "Number of RPCs in single burst interval.")
+
+	burst_interval := flag.Int("burst_interval",
+		100,
+		"Burst internval in millisecond")
+
 	flag.Parse()
 
+	log.Printf("Waiting for servers to come up")
+	time.Sleep(STARTUP_TIMEOUT * time.Second)
+
+	// Initialize random number generator
+	randomGen = rand.NewSource(time.Now().UnixNano())
+
 	var wg sync.WaitGroup
-	for i := 0; i < *clients; i++ {
+	for i := 0; i < *num_threads; i++ {
 		wg.Add(1)
 		go communicate(
 			&clientConfig{
-				server_addr:  *addr,
-				client_id:    fmt.Sprintf("client-%d", i),
-				num_requests: *reqs}, &wg)
+				server_addr:    *server_addr,
+				thread_id:      fmt.Sprintf("thread-%d", i),
+				num_requests:   *reqs_per_thread,
+				burst_size:     *burst_size,
+				burst_interval: *burst_interval,
+			}, &wg)
 	}
 	wg.Wait()
 }
 
-func communicate(cfg *clientConfig, wg *sync.WaitGroup) {
-	defer wg.Done()
+func randomize_start() {
+	r1 := rand.New(randomGen)
+	delay := time.Duration(r1.Intn(500))
+	time.Sleep(delay * time.Millisecond)
+}
+
+func communicate(cfg *clientConfig, clientWg *sync.WaitGroup) {
+	defer clientWg.Done()
+	var (
+		conn       *grpc.ClientConn
+		errCnt     int64
+		successCnt int64
+		cntLock    sync.Mutex
+		msgWg      sync.WaitGroup
+	)
+
+	randomize_start()
 
 	latencies := make([]int64, cfg.num_requests)
-
-	log.Printf("Client: %s Start", cfg.client_id)
+	log.Printf("Thread: %s Started", cfg.thread_id)
 
 	conn, err := grpc.Dial(cfg.server_addr, grpc.WithInsecure(), grpc.WithBlock())
 	if err != nil {
-		log.Fatalf("did not connect: %v", err)
+		log.Fatalf("Thread: %s could not connect: %v", cfg.thread_id, err)
 	}
 	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
 
-	var wgSync sync.WaitGroup
-	for i := 0; i < cfg.num_requests; i++ {
-		wgSync.Add(1)
-		go func(seqNum int, wgSync *sync.WaitGroup) {
+	clnt := pb.NewGreeterClient(conn)
+
+	for i, b := 0, 0; i < cfg.num_requests; i++ {
+		msgWg.Add(1)
+		go func(seqNum int, wgSync *sync.WaitGroup, cntLock *sync.Mutex) {
+			defer wgSync.Done()
+
 			ctx, cancel := context.WithTimeout(context.Background(),
-				time.Second*10)
+				time.Second*RPC_TIMEOUT)
 			defer cancel()
 
 			now := time.Now()
 			start_msec := now.UnixMilli()
-			r, err := c.SayHello(ctx, &pb.HelloRequest{ClientName: cfg.client_id,
+
+			_, err := clnt.SayHello(ctx, &pb.HelloRequest{ClientName: cfg.thread_id,
 				SeqNum: int32(seqNum)})
+
+			cntLock.Lock()
+			defer cntLock.Unlock()
 			if err != nil {
-				log.Fatalf("could not greet: %v", err)
-			}
-			if int32(seqNum) != r.GetSeqNum() {
-				log.Fatalf("Invalid seqNum. Expected: %v, Received: %v",
-					seqNum, r.GetSeqNum())
+				log.Printf("RPC Error: %v", err)
+				errCnt = errCnt + 1
+			} else {
+				successCnt = successCnt + 1
+				now = time.Now()
+				end_msec := now.UnixMilli()
+				latencies[seqNum] = end_msec - start_msec
+				if latencies[seqNum] < 0 { // Time skew??
+					latencies[seqNum] = 0
+				}
 			}
 
-			now = time.Now()
-			end_msec := now.UnixMilli()
-			latencies[seqNum] = end_msec - start_msec
-			wgSync.Done()
-		}(i, &wgSync)
+		}(i, &msgWg, &cntLock)
+
+		if b == cfg.burst_size {
+			time.Sleep(time.Duration(cfg.burst_interval) * time.Millisecond)
+			b = 0
+		} else {
+			b = b + 1
+		}
 	}
-	wgSync.Wait()
+	msgWg.Wait()
 	minRTT, maxRTT, sum := minMaxSum(latencies)
-	log.Printf("Client: %s Done. Min RTT: %vms, Max RTT: %vms, Avg: %vms",
-		cfg.client_id, minRTT, maxRTT, sum/int64(cfg.num_requests))
+	log.Printf("Thread: %s Done. Min RTT: %vms, Max RTT: %vms, Avg: %vms, SucessRsp: %v ErrRsp: %v",
+		cfg.thread_id, minRTT, maxRTT, sum/int64(cfg.num_requests), successCnt, errCnt)
 }
 
 func minMaxSum(array []int64) (int64, int64, int64) {

@@ -1,3 +1,8 @@
+ifndef BIN_DIR
+BIN_DIR := $(shell pwd)
+endif
+
+.PHONY: all
 all: client.go
 	@echo "Building client..."
-	@go build -o ${ROOT_DIR}/bin/client client.go
+	@CGO_ENABLED=0 go build -o $(BIN_DIR)/client client.go
