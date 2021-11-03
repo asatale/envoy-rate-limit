@@ -8,22 +8,22 @@ services:
     command:
       - ./server
       - -rsp_delay
-      - "100"
+      - "0"
       - -variance
       - "0"
     networks:
       - envoymesh
-  server-2:
-    image: grpc-server
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    command:
-      - ./server
-      - -rsp_delay
-      - "20"      
-    networks:
-      - envoymesh
+  # server-2:
+  #   image: grpc-server
+  #   build:
+  #     context: ./app
+  #     dockerfile: Dockerfile
+  #   command:
+  #     - ./server
+  #     - -rsp_delay
+  #     - "20"
+  #   networks:
+  #     - envoymesh
      
   client:
     image: grpc-client
@@ -35,21 +35,21 @@ services:
       - -server_addr
       - envoy:50051
       - -num_threads
-      - "2"
-      - -reqs_per_thread
-      - "1000000"
-      - -burst_size
       - "10"
+      - -reqs_per_thread
+      - "10000"
+      - -burst_size
+      - "80"
       - -burst_interval
       - "100"
     depends_on:
       - envoy
       - server-1
-      - server-2
+#      - server-2
     networks:
       - envoymesh
   envoy:
-    image: envoyproxy/envoy:v1.14.1
+    image: envoyproxy/envoy:v1.20.0
     ports:
       - "9000:9000"
     volumes:
@@ -71,9 +71,6 @@ services:
     image: grafana/grafana:8.2.2-ubuntu
     ports:
       - "3000:3000"
-    environment:
-      - "DS_USER=admin"
-      - "DS_PASS=pass"
     networks:
       - envoymesh
 
