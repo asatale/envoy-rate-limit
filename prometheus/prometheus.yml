@@ -1,0 +1,35 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 30s
+  # scrape_timeout is set to the global default (10s).
+
+
+scrape_configs:
+  - job_name: envoy-proxy
+
+    scrape_interval: 10s
+    scrape_timeout: 2s
+
+    body_size_limit: 10MB
+    sample_limit: 1000
+
+    metrics_path: /stats/prometheus
+    scheme: http
+
+    static_configs:
+      - targets: ['envoy:9000']
+        
+  - job_name: prometheus
+
+    scrape_interval: 10s
+    scrape_timeout: 2s
+
+    body_size_limit: 10MB
+    sample_limit: 1000
+
+    scheme: http
+
+    static_configs:
+      - targets: ['localhost:9090']
+        
+
