@@ -8,22 +8,22 @@ services:
     command:
       - ./server
       - -rsp_delay
-      - "10"
+      - "0"
       - -variance
       - "2"
     networks:
       - envoymesh
-  server-2:
-    image: grpc-server
-    build:
-      context: ./app
-      dockerfile: Dockerfile
-    command:
-      - ./server
-      - -rsp_delay
-      - "20"      
-    networks:
-      - envoymesh
+  # server-2:
+  #   image: grpc-server
+  #   build:
+  #     context: ./app
+  #     dockerfile: Dockerfile
+  #   command:
+  #     - ./server
+  #     - -rsp_delay
+  #     - "20"
+  #   networks:
+  #     - envoymesh
      
   client:
     image: grpc-client
@@ -35,21 +35,21 @@ services:
       - -server_addr
       - envoy:50051
       - -num_threads
-      - "30"
+      - "10"
       - -reqs_per_thread
-      - "5000"
+      - "10000"
       - -burst_size
-      - "20"
+      - "80"
       - -burst_interval
       - "100"
     depends_on:
       - envoy
       - server-1
-      - server-2
+#      - server-2
     networks:
       - envoymesh
   envoy:
-    image: envoyproxy/envoy:v1.14.1
+    image: envoyproxy/envoy:v1.20.0
     ports:
       - "9000:9000"
     volumes:
