@@ -32,16 +32,16 @@ static_resources:
       connect_timeout: 0.25s
       type: strict_dns
       lb_policy: round_robin
-      http2_protocol_options: {}
+      http2_protocol_options:
+        max_concurrent_streams: 100
       hosts:
         - socket_address: { address: server-1, port_value: 50051 }
-        - socket_address: { address: server-2, port_value: 50051 }       
+        - socket_address: { address: server-2, port_value: 50051 }
       circuit_breakers:
         thresholds:
           - priority: default
-            max_connections: 1000 
+            max_connections: 100
             max_pending_requests: 1000
-            max_requests: 1000
 admin:
   access_log_path: "/dev/null"
   address:
