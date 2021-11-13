@@ -1,4 +1,4 @@
-module github.com/asatale/envoy-rate-limit/app
+module github.com/asatale/envoy-rate-limit/app/server/go
 
 go 1.17
 

@@ -2,14 +2,14 @@
 async: true
 dial_timeout: 5
 
-total: 30000    # Total requests
-rps: 2000       # Requests per second
+total: 100000    # Total requests
+#rps: 2000        # Requests per second
 
 # Concurrency configuration
 concurrency-schedule: step
 concurrency-start: 20
 concurrency-step: 20
-concurrency-end: 200 # Max concurrency
+concurrency-end: 100      
 concurrency-step-duration: "1s"
 
 

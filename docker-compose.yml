@@ -3,14 +3,14 @@ services:
   server-1:
     image: grpc-server
     build:
-      context: ./app/go-server
-      dockerfile: Dockerfile
+      context: ./app
+      dockerfile: Dockerfile.golang
     command:
       - ./server
       - -rsp_delay
-      - "0"
+      - "20"
       - -variance
-      - "0"
+      - "5"
     networks:
       - envoymesh
   client:

@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	pb "github.com/asatale/envoy-rate-limit/app/proto/go/hello_world"
+	pb "github.com/asatale/envoy-rate-limit/app/server/go/hello_world"
 	"google.golang.org/grpc"
 	"log"
 	"math/rand"
