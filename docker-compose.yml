@@ -26,22 +26,16 @@ services:
   #     - envoymesh
      
   client:
-    image: grpc-client
-    build:
-      context: ./app
-      dockerfile: Dockerfile
+    image: obvionaoe/ghz
     command:
-      - ./client
-      - -server_addr
+      - --insecure
+      - --config=/ghz/client/config.yaml
+      - --proto=/ghz/proto/hello-world.proto
+      - --call=helloworld.Greeter.SayHello
       - envoy:50051
-      - -num_threads
-      - "10"
-      - -reqs_per_thread
-      - "10000"
-      - -burst_size
-      - "80"
-      - -burst_interval
-      - "100"
+    volumes:
+      - ./app/proto:/ghz/proto
+      - ./app/client:/ghz/client
     depends_on:
       - envoy
       - server-1
