@@ -3,7 +3,7 @@ services:
   server-1:
     image: grpc-server
     build:
-      context: ./app
+      context: ./app/go-server
       dockerfile: Dockerfile
     command:
       - ./server
@@ -13,18 +13,6 @@ services:
       - "0"
     networks:
       - envoymesh
-  # server-2:
-  #   image: grpc-server
-  #   build:
-  #     context: ./app
-  #     dockerfile: Dockerfile
-  #   command:
-  #     - ./server
-  #     - -rsp_delay
-  #     - "20"
-  #   networks:
-  #     - envoymesh
-     
   client:
     image: obvionaoe/ghz
     command:
