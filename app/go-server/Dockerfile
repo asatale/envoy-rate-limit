@@ -1,6 +1,7 @@
 FROM golang:1.17 AS Builder
 WORKDIR /go/src/app
 COPY . .
+RUN go mod tidy
 RUN CGO_ENABLED=0  go build -o server server.go
 
 FROM alpine:latest
