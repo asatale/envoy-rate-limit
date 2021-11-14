@@ -4,44 +4,22 @@ services:
     image: grpc-server
     build:
       context: ./app
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.golang
     command:
       - ./server
       - -rsp_delay
-      - "0"
+      - "20"
       - -variance
-      - "2"
+      - "5"
     networks:
       - envoymesh
-  # server-2:
-  #   image: grpc-server
-  #   build:
-  #     context: ./app
-  #     dockerfile: Dockerfile
-  #   command:
-  #     - ./server
-  #     - -rsp_delay
-  #     - "20"
-  #   networks:
-  #     - envoymesh
-     
   client:
-    image: grpc-client
-    build:
-      context: ./app
-      dockerfile: Dockerfile
+    image: obvionaoe/ghz
     command:
-      - ./client
-      - -server_addr
-      - envoy:50051
-      - -num_threads
-      - "10"
-      - -reqs_per_thread
-      - "10000"
-      - -burst_size
-      - "80"
-      - -burst_interval
-      - "100"
+      - --config=/ghz/client/config.yaml
+    volumes:
+      - ./app/proto:/ghz/proto
+      - ./app/client:/ghz/client
     depends_on:
       - envoy
       - server-1
@@ -54,6 +32,23 @@ services:
       - "9000:9000"
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - envoymesh
+
+  prometheus:
+    image: prometheus
+    build:
+      context: ./prometheus
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    networks:
+      - envoymesh
+
+  grafana:
+    image: grafana/grafana:8.2.2-ubuntu
+    ports:
+      - "3000:3000"
     networks:
       - envoymesh
 

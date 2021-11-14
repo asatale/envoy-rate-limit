@@ -1,0 +1,36 @@
+---
+proto: /ghz/proto/hello-world.proto
+call: helloworld.Greeter.SayHello
+host: envoy:50051
+insecure: true
+
+async: true
+dial_timeout: 5
+
+total: 100000    # Total requests
+rps: 2000        # Requests per second
+
+# Concurrency configuration
+concurrency-schedule: step
+concurrency-start: 20
+concurrency-step: 20
+concurrency-end: 100      
+concurrency-step-duration: "2s"
+
+# Load configuration
+load-schedule: step # step/line/const
+load-start: 100
+load-step: 50
+load-step-duration: "2s"
+load-max-duration: "30s"
+
+
+max-recv-message-size: 10MB
+max-send-message-size: 10MB
+
+
+data:
+  clientName: "{{ .WorkerID }}"
+  seqNum: "{{ .RequestNumber }}"
+metadata:
+  clientID: "{{ .WorkerID }}"

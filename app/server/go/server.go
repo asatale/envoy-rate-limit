@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"flag"
-	pb "github.com/asatale/envoy-rate-limit/app/proto/hello_world"
+	pb "github.com/asatale/envoy-rate-limit/app/server/go/hello_world"
 	"google.golang.org/grpc"
 	"log"
 	"math/rand"
@@ -26,7 +26,11 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 
 	if *delay != 0 {
 		r1 := rand.New(randomGen)
-		v := r1.Intn(*variance)
+		var v int
+		if *variance != 0 {
+			v = r1.Intn(*variance)
+		}
+
 		rsp_delay := time.Duration(*delay)
 
 		if v%2 == 0 {

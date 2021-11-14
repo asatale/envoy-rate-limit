@@ -26,25 +26,25 @@
                                 seconds: 0
                                 nanos: 0
                   http_filters:
-                    - name: envoy.filters.http.adaptive_concurrency
-                      typed_config:
-                        "@type": type.googleapis.com/envoy.extensions.filters.http.adaptive_concurrency.v3.AdaptiveConcurrency
-                        gradient_controller_config:
-                          sample_aggregate_percentile:
-                            value: 90
-                          concurrency_limit_params:
-                            concurrency_update_interval: 0.1s
-                            max_concurrency_limit: 10000
-                          min_rtt_calc_params:
-                            jitter:
-                              value: 10
-                            buffer:
-                              value: 100
-                            interval: 30s
-                            request_count: 50
-                        enabled:
-                          default_value: true
-                          runtime_key: "adaptive_concurrency.enabled"
+                    # - name: envoy.filters.http.adaptive_concurrency
+                    #   typed_config:
+                    #     "@type": type.googleapis.com/envoy.extensions.filters.http.adaptive_concurrency.v3.AdaptiveConcurrency
+                    #     gradient_controller_config:
+                    #       sample_aggregate_percentile:
+                    #         value: 90
+                    #       concurrency_limit_params:
+                    #         concurrency_update_interval: 0.1s
+                    #         max_concurrency_limit: 10000
+                    #       min_rtt_calc_params:
+                    #         jitter:
+                    #           value: 10
+                    #         buffer:
+                    #           value: 100
+                    #         interval: 30s
+                    #         request_count: 50
+                    #     enabled:
+                    #       default_value: true
+                    #       runtime_key: "adaptive_concurrency.enabled"
                     - name: envoy.filters.http.router
                       typed_config: {}
     clusters:
@@ -67,7 +67,7 @@
         circuit_breakers:
           thresholds:
             - priority: default
-              max_connections: 10
+              max_connections: 2
               max_pending_requests: 100
               max_requests: 300
 admin:

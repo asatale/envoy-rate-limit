@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./hello_world";
+option go_package = "./go/hello_world";
 
 package helloworld;
 
