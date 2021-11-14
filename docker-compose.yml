@@ -16,11 +16,7 @@ services:
   client:
     image: obvionaoe/ghz
     command:
-      - --insecure
       - --config=/ghz/client/config.yaml
-      - --proto=/ghz/proto/hello-world.proto
-      - --call=helloworld.Greeter.SayHello
-      - envoy:50051
     volumes:
       - ./app/proto:/ghz/proto
       - ./app/client:/ghz/client
