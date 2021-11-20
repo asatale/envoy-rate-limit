@@ -4,9 +4,8 @@ services:
     image: grpc-server
     build:
       context: ./app
-      dockerfile: Dockerfile.golang
+      dockerfile: Dockerfile.python
     command:
-      - ./server
       - -rsp_delay
       - "20"
       - -variance
@@ -16,14 +15,14 @@ services:
   client:
     image: obvionaoe/ghz
     command:
-      - --config=/ghz/client/config.yaml
+      - --config=/ghz/client/config.json
+      - envoy:50051
     volumes:
-      - ./app/proto:/ghz/proto
       - ./app/client:/ghz/client
+      - ./app/proto:/ghz/proto
     depends_on:
       - envoy
       - server-1
-#      - server-2
     networks:
       - envoymesh
   envoy:

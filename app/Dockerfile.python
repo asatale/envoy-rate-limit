@@ -1,0 +1,21 @@
+FROM python:3.7.12-alpine
+
+RUN apk add --no-cache \
+    g++ \
+    musl-dev \
+    libffi-dev \
+    libstdc++
+
+RUN mkdir -p /app
+WORKDIR /app
+COPY server/python/requirements.txt . 
+RUN pip3 install --no-cache-dir -r requirements.txt \
+    && apk del \
+    g++ \
+    musl-dev \
+    libffi-dev
+
+COPY server/python/ .
+COPY proto/python/ .
+
+ENTRYPOINT ["python3", "./server.py"]

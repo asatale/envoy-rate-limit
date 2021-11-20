@@ -10,3 +10,4 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /go/src/app/bin
 COPY --from=Builder /go/src/app/server .
 
+ENTRYPOINT [ "/go/src/app/bin/server" ]

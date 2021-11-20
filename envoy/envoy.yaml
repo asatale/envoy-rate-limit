@@ -61,9 +61,6 @@
               - endpoint:
                   address:
                     socket_address: { address: server-1, port_value: 50051 }
-              - endpoint:
-                  address:
-                    socket_address: { address: server-2, port_value: 50051 }
         circuit_breakers:
           thresholds:
             - priority: default

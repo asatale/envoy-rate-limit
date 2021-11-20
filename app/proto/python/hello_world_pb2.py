@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='hello-world.proto',
   package='helloworld',
   syntax='proto3',
-  serialized_options=b'Z\r./hello_world',
+  serialized_options=b'Z\020./go/hello_world',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11hello-world.proto\x12\nhelloworld\"2\n\x0cHelloRequest\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\"0\n\nHelloReply\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\x32I\n\x07Greeter\x12>\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x00\x42\x0fZ\r./hello_worldb\x06proto3'
+  serialized_pb=b'\n\x11hello-world.proto\x12\nhelloworld\"2\n\x0cHelloRequest\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\"0\n\nHelloReply\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\x32I\n\x07Greeter\x12>\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x00\x42\x12Z\x10./go/hello_worldb\x06proto3'
 )
 
 
