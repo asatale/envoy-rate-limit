@@ -14,7 +14,7 @@ var (
 
 func init() {
 	addrValue = flag.String("addr", "0.0.0.0:50051", "Server address string")
-	delayValue = flag.Int("delay", 10, "Response delay in millisecond")
+	delayValue = flag.Int("delay", 20, "Response delay in millisecond")
 	dprobValue = flag.Int("dprob", 20, "Delay Probability")
 	cancelOption = flag.Bool("cancel", false, "Cancel RPC with cancel-probability")
 	cprobValue = flag.Int("cprob", 20, "Cancel Probability")

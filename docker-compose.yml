@@ -9,10 +9,10 @@ services:
       - -delay
       - "20"
       - -dprob
-      - "10"
+      - "0"
       - -cancel
       - -cprob
-      - "20"
+      - "10"
     ports:
       - "50051:50051"
     networks:

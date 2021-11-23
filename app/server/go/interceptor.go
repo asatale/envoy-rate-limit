@@ -16,7 +16,7 @@ func cancelInterceptor(ctx context.Context,
 	handler grpc.UnaryHandler) (interface{}, error) {
 
 	if *cancelOption && *cprobValue > 0 {
-		randNumber := rand.Intn(100)
+		randNumber := rand.Intn(101)
 
 		if randNumber <= *cprobValue {
 			log.Printf("Cancelling RPC")
@@ -34,7 +34,7 @@ func delayInterceptor(ctx context.Context,
 	handler grpc.UnaryHandler) (interface{}, error) {
 
 	if *delayValue > 0 && *dprobValue > 0 {
-		randNumber := rand.Intn(100)
+		randNumber := rand.Intn(101)
 		if randNumber <= *dprobValue {
 			log.Printf("Delayed RPC response")
 			time.Sleep(time.Duration(*delayValue))
