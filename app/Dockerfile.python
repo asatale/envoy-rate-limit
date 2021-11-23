@@ -18,4 +18,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt \
 COPY server/python/ .
 COPY proto/python/ .
 
-ENTRYPOINT ["python3", "./server.py"]
+ENTRYPOINT ["python3", "./main.py"]
