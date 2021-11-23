@@ -4,12 +4,17 @@ services:
     image: grpc-server
     build:
       context: ./app
-      dockerfile: Dockerfile.python
+      dockerfile: Dockerfile.golang
     command:
-      - -rsp_delay
+      - -delay
       - "20"
-      - -variance
-      - "5"
+      - -dprob
+      - "10"
+      - -cancel
+      - -cprob
+      - "20"
+    ports:
+      - "50051:50051"
     networks:
       - envoymesh
   client:

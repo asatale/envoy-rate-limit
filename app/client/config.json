@@ -6,7 +6,7 @@
   "dial_timeout" : 5,
   "timeout": "7s",
   "total" : 1000,
-  "rps" : 10,
+  "rps" : 50,
   "concurrency" : 100,
   "data": {
     "clientName": "{{.WorkerID}}"

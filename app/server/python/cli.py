@@ -9,5 +9,7 @@ parser.add_argument('-rsp_delay', type=int, default=10,
                     help='Response delay in millisecond. Default: 10ms')
 parser.add_argument('-variance', type=int, default=2,
                     help='Response time randomized variance in millisecond. Default: 2ms')
+parser.add_argument('-abort', type=float, default=0,
+                    help='Abort percentage. Default: 2ms')
 
 args = parser.parse_args()

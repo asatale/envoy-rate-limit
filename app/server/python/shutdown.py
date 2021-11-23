@@ -8,14 +8,15 @@ def register_signal_handler(loop, signal_callback=None):
         logger.info(f"Recevied signal {signal}. Shutting down")
         if signal_callback:
             logger.info("Issuing application signal_callback")
-            await signal_callback()
+            await signal_callback
+            return
         tasks = [t for t in asyncio.all_tasks() if t is not
                  asyncio.current_task()]
         [task.cancel() for task in tasks]
 
         logger.info(f"Cancelling {len(tasks)} outstanding tasks")
         await asyncio.gather(*tasks)
-        loop.stop()
+        loop.close()
 
     for signame in {'SIGINT', 'SIGTERM', 'SIGHUP', 'SIGQUIT'}:
         loop.add_signal_handler(

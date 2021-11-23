@@ -1,21 +1,29 @@
 import asyncio
-from hello_world_pb2 import HelloReply
+import grpc
+import functools
+from hello_world_pb2 import HelloRequest, HelloReply
 from hello_world_pb2_grpc import GreeterServicer
-from cli import args
 from log import logger
 
-class Greeter(GreeterServicer):
 
-    async def SayHello(self, request, context):
-        logger.debug(f"Received hello_request from {request.clientName} with \
-        sequence number: {request.seqNum}")
-
+def RPCHandler(func):
+    @functools.wraps(func)
+    async def _wrapped_rpc(*args, **kwargs):
         try:
-            if args.rsp_delay != 0:
-                await asyncio.sleep(args.rsp_delay)
-
-                await request.send_message(HelloReply(clientName=request.clientName,
-                                                      seqNum=request.seqNum))
-        except asyncio.CancelledError:
-            logger.warn("Received RPC cancellError exception")
+            return await func(*args, **kwargs)
+        except asyncio.CancelledError as e:
+            logger.warn(f"Received RPC cancellError exception: {e}")
+        except grpc.aio.AbortError:
             raise
+        except Exception as e:
+            logger.warn(f"Received Exception: {e}")
+    return _wrapped_rpc
+
+
+class Greeter(GreeterServicer):
+    @RPCHandler
+    async def SayHello(self,
+                       request: HelloRequest,
+                       context: grpc.aio.ServicerContext) -> HelloReply:
+        return HelloReply(clientName=request.clientName,
+                          seqNum=request.seqNum)
