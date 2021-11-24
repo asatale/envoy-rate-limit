@@ -20,8 +20,6 @@ func cancelInterceptor(ctx context.Context,
 
 		if randNumber <= *cprobValue {
 			log.Printf("Cancelling RPC")
-			_, cancel := context.WithCancel(ctx)
-			defer cancel()
 			return nil, status.Errorf(codes.ResourceExhausted, "%s is cancelled by middleware", info.FullMethod)
 		}
 	}
@@ -37,7 +35,7 @@ func delayInterceptor(ctx context.Context,
 		randNumber := rand.Intn(101)
 		if randNumber <= *dprobValue {
 			log.Printf("Delayed RPC response")
-			time.Sleep(time.Duration(*delayValue))
+			time.Sleep(time.Duration(*delayValue) * time.Millisecond)
 		}
 	}
 	return handler(ctx, req)
