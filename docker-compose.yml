@@ -4,15 +4,15 @@ services:
     image: grpc-server
     build:
       context: ./app
-      dockerfile: Dockerfile.golang
+      dockerfile: Dockerfile.python
     command:
       - -delay
       - "20"
       - -dprob
-      - "100"
+      - "50"
       - -cancel
       - -cprob
-      - "0"
+      - "50"
     ports:
       - "50051:50051"
     networks:
