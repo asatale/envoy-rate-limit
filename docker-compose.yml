@@ -7,7 +7,7 @@ services:
       dockerfile: Dockerfile.python
     command:
       - -delay
-      - "20"
+      - "2000"
       - -dprob
       - "50"
       - -cancel
@@ -15,6 +15,7 @@ services:
       - "50"
     ports:
       - "50051:50051"
+      - "8000:8000"
     networks:
       - envoymesh
   client:

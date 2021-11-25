@@ -1,4 +1,4 @@
-FROM golang:1.17 AS Builder
+FROM golang:1.18 AS Builder
 WORKDIR /go/src/app
 COPY server/go/ .
 COPY proto/go/ .

@@ -1,3 +1,5 @@
 grpcio==1.42.0
 google-api-python-client==2.30.0
 grpcio-reflection==1.42.0
+aioprometheus==21.9.1
+aiohttp==3.8.1

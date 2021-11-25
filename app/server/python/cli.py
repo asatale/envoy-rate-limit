@@ -14,5 +14,7 @@ parser.add_argument('-cancel', dest='cancel', action='store_const',
                     help='Cancel RPC with cancel-probability')
 parser.add_argument('-cprob', type=int, default=20,
                     help='Cancel Probability')
+parser.add_argument('-metric_addr', type=str, default='0.0.0.0:8000',
+                    help='Prometheus scrapping endpoint for service')
 
 args = parser.parse_args()

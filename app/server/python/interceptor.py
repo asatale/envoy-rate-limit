@@ -1,4 +1,5 @@
 import abc
+import socket
 import asyncio
 import inspect
 import grpc
@@ -7,9 +8,33 @@ from log import logger
 from cli import args
 import random
 from typing import Any, Callable, Tuple, Awaitable
+from aioprometheus import Counter, Gauge
 
 
 SECOND_TO_MS = 0.001
+
+const_label = {
+    "host": socket.gethostname(),
+    "app": "Python Asyncio GRPCServer"
+}
+
+total_rpc_metric = Counter(
+    "python_grpc_server_total_requests",
+    "Total number of requests serverd",
+    const_labels=const_label
+)
+
+cancel_rpc_metric = Counter(
+    "python_grpc_server_cancelled_requests",
+    "Number of cancelled RPCs",
+    const_labels=const_label
+)
+
+delayed_rpc_metric = Counter(
+    "python_grpc_server_delayed_requests",
+    "Number of delated RPC responses",
+    const_labels=const_label
+)
 
 
 # Initialize random number generator
@@ -68,6 +93,14 @@ class ServerInterceptorMiddleWare(ServerInterceptor, metaclass=abc.ABCMeta):
         )
 
 
+class MetricInterceptor(ServerInterceptorMiddleWare):
+
+    async def intercept(self, next_method, request, context):
+        logger.debug("RPC Request received")
+        total_rpc_metric.inc({"kind": "rpc_total"})
+        return await next_method(request, context)
+
+
 class CancelInterceptor(ServerInterceptorMiddleWare):
 
     async def intercept(self, next_method, request, context):
@@ -75,6 +108,7 @@ class CancelInterceptor(ServerInterceptorMiddleWare):
             rand = random.randint(0, 100)
             if rand <= args.cprob:
                 logger.info("Cancelling RPC")
+                cancel_rpc_metric.inc({"kind": "rpc_cancelled"})
                 await context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED,
                                     "Policy based RPC cancellation")
         return await next_method(request, context)
@@ -87,5 +121,7 @@ class DelayInterceptor(ServerInterceptorMiddleWare):
             rand = random.randint(0, 100)
             if rand <= args.dprob:
                 logger.info("Delayed RPC response")
+                delayed_rpc_metric.inc({"kind": "rpc_delated"})
                 await asyncio.sleep(args.delay * SECOND_TO_MS)
-        return await next_method(request, context)
+            result = await next_method(request, context)
+        return result
