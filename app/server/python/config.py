@@ -17,4 +17,4 @@ parser.add_argument('-cprob', type=int, default=20,
 parser.add_argument('-metric_addr', type=str, default='0.0.0.0:8000',
                     help='Prometheus scrapping endpoint for service')
 
-args = parser.parse_args()
+cfg = parser.parse_args()

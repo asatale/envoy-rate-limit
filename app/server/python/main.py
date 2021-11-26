@@ -1,7 +1,7 @@
 import asyncio
 from server import GRPCServer
 from log import logger
-from cli import args
+from config import cfg
 from shutdown import register_signal_handler
 from prometheus import PrometheusServer
 
@@ -18,8 +18,8 @@ async def main():
         await prometheus_server.stop()
 
     logger.info("Starting main application")
-    grpc_server = GRPCServer(args.addr, MAX_CONCURRENT_RPCS)
-    prometheus_server = PrometheusServer(args.metric_addr)
+    grpc_server = GRPCServer(cfg.addr, MAX_CONCURRENT_RPCS)
+    prometheus_server = PrometheusServer(cfg.metric_addr)
 
     # Register signal handlers
     register_signal_handler(

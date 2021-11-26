@@ -1,3 +1,4 @@
+import socket
 from aioprometheus.service import Service
 from aioprometheus import Counter
 from log import logger
@@ -15,3 +16,27 @@ class PrometheusServer:
     async def stop(self):
         logger.info("Stopping PrometheusServer")
         await self._server.stop()
+
+
+const_label = {
+    "host": socket.gethostname(),
+    "app": "Python Asyncio GRPCServer"
+}
+
+total_rpc_metric = Counter(
+    "python_grpc_server_total_requests",
+    "Total number of RPC requests received",
+    const_labels=const_label
+)
+
+cancel_rpc_metric = Counter(
+    "python_grpc_server_cancelled_requests",
+    "Number of cancelled RPCs",
+    const_labels=const_label
+)
+
+delayed_rpc_metric = Counter(
+    "python_grpc_server_delayed_requests",
+    "Number of delated RPC responses",
+    const_labels=const_label
+)

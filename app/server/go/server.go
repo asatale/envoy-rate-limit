@@ -16,12 +16,13 @@ func init() {
 
 func main() {
 
-	lis, err := net.Listen("tcp", *addrValue)
+	lis, err := net.Listen("tcp", appCfg.addrValue)
 	if err != nil {
 		log.Fatalf("Failed to start listening: %v", err)
 	}
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
+			metricInterceptor,
 			cancelInterceptor,
 			delayInterceptor,
 		),
@@ -29,6 +30,9 @@ func main() {
 	hello_world.RegisterGreeterServer(s, &server{})
 	log.Printf("Server listening at %v", lis.Addr())
 
+	if err := startPrometheusServer(); err != nil {
+		log.Fatalf("Failed to prometheus metric stub: %v", err)
+	}
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
