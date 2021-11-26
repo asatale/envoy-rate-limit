@@ -4,18 +4,20 @@ RUN apk add --no-cache \
     g++ \
     musl-dev \
     libffi-dev \
-    libstdc++
+    libstdc++ \
+    && python -m pip install pip-tools
 
-RUN mkdir -p /app
+RUN mkdir -p /app/src
 WORKDIR /app
-COPY server/python/requirements.txt . 
-RUN pip3 install --no-cache-dir -r requirements.txt \
-    && apk del \
+COPY server/python/requirements.in .
+RUN pip-compile requirements.in && pip install -r requirements.txt
+RUN apk del \
     g++ \
     musl-dev \
     libffi-dev
 
-COPY server/python/ .
-COPY proto/python/ .
+COPY server/python/src /app/src/
+COPY proto/python/ /app/src/
 
+WORKDIR /app/src
 ENTRYPOINT ["python3", "./main.py"]
