@@ -6,24 +6,29 @@ services:
       context: ./app
       dockerfile: Dockerfile.golang
     command:
-      - ./server
-      - -rsp_delay
-      - "20"
-      - -variance
-      - "5"
+      - -delay
+      - "2000"
+      - -dprob
+      - "50"
+      - -cancel
+      - -cprob
+      - "50"
+    ports:
+      - "50051:50051"
+      - "8000:8000"
     networks:
       - envoymesh
   client:
     image: obvionaoe/ghz
     command:
-      - --config=/ghz/client/config.yaml
+      - --config=/ghz/client/config.json
+      - envoy:50051
     volumes:
-      - ./app/proto:/ghz/proto
       - ./app/client:/ghz/client
+      - ./app/proto:/ghz/proto
     depends_on:
       - envoy
       - server-1
-#      - server-2
     networks:
       - envoymesh
   envoy:

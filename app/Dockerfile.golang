@@ -3,10 +3,11 @@ WORKDIR /go/src/app
 COPY server/go/ .
 COPY proto/go/ .
 RUN go mod tidy
-RUN CGO_ENABLED=0  go build -o server server.go
+RUN CGO_ENABLED=0  go build -o server *.go
 
 FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /go/src/app/bin
 COPY --from=Builder /go/src/app/server .
 
+ENTRYPOINT [ "/go/src/app/bin/server" ]

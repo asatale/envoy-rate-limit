@@ -1,0 +1,14 @@
+{
+  "proto": "/ghz/proto/hello-world.proto",
+  "call": "helloworld.Greeter.SayHello",
+  "insecure": true,
+  "async": true,
+  "dial_timeout" : 5,
+  "timeout": "7s",
+  "total" : 1000,
+  "rps" : 50,
+  "concurrency" : 100,
+  "data": {
+    "clientName": "{{.WorkerID}}"
+  }
+}
