@@ -11,7 +11,7 @@ from typing import Any, Callable, Tuple, Awaitable
 from aioprometheus import Counter, Gauge
 from prometheus import total_rpc_metric, cancel_rpc_metric, delayed_rpc_metric
 
-SECOND_TO_MS = 0.001
+SECOND_TO_MILLISECOND = 0.001
 
 # Initialize random number generator
 random.seed()
@@ -80,10 +80,10 @@ class MetricInterceptor(ServerInterceptorMiddleWare):
 class CancelInterceptor(ServerInterceptorMiddleWare):
 
     async def intercept(self, next_method, request, context):
+        logger.info("Cancelling RPC")
         if cfg.cancel and cfg.cprob > 0:
             rand = random.randint(0, 100)
             if rand <= cfg.cprob:
-                logger.info("Cancelling RPC")
                 cancel_rpc_metric.inc({"kind": "rpc_cancelled"})
                 await context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED,
                                     "Policy based RPC cancellation")
@@ -93,11 +93,11 @@ class CancelInterceptor(ServerInterceptorMiddleWare):
 class DelayInterceptor(ServerInterceptorMiddleWare):
 
     async def intercept(self, next_method, request, context):
+        logger.info("Delayed RPC response")
         if cfg.delay > 0 and cfg.dprob > 0:
             rand = random.randint(0, 100)
             if rand <= cfg.dprob:
-                logger.info("Delayed RPC response")
                 delayed_rpc_metric.inc({"kind": "rpc_delated"})
-                await asyncio.sleep(cfg.delay * SECOND_TO_MS)
+                await asyncio.sleep(cfg.delay * SECOND_TO_MILLISECOND)
             result = await next_method(request, context)
         return result
