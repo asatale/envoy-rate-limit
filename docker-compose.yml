@@ -4,7 +4,7 @@ services:
     image: grpc-server
     build:
       context: ./app
-      dockerfile: Dockerfile.python
+      dockerfile: Dockerfile.golang
     command:
       - -delay
       - "2000"
