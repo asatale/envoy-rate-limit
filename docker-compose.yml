@@ -7,12 +7,12 @@ services:
       dockerfile: Dockerfile.golang
     command:
       - -delay
-      - "2000"
+      - "20000"
       - -dprob
-      - "50"
+      - "100"
       - -cancel
       - -cprob
-      - "50"
+      - "0"
     ports:
       - "50051:50051"
       - "8000:8000"

@@ -6,6 +6,9 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -29,6 +32,16 @@ func main() {
 	)
 	hello_world.RegisterGreeterServer(s, &server{})
 	log.Printf("Server listening at %v", lis.Addr())
+
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+
+	go func() {
+		sig := <-sigs
+		log.Println("Received signal:", sig)
+		s.GracefulStop()
+		log.Println("Server gracefully stopped")
+	}()
 
 	if err := startPrometheusServer(); err != nil {
 		log.Fatalf("Failed to prometheus metric stub: %v", err)
