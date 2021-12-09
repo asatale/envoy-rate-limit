@@ -6,8 +6,6 @@ from hello_world_pb2_grpc import GreeterServicer
 from log import logger
 
 MAX_PARALLISM = 50
-
-
 semaphore = asyncio.Semaphore(MAX_PARALLISM)
 
 

@@ -7,12 +7,12 @@ services:
       dockerfile: ${DOCKERFILE}
     command:
       - -delay
-      - "20000"
+      - "2000"
       - -dprob
-      - "100"
+      - "50"
       - -cancel
       - -cprob
-      - "0"
+      - "50"
     ports:
       - "50051:50051"
       - "8000:8000"
