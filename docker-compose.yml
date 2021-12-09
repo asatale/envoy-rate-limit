@@ -4,7 +4,7 @@ services:
     image: grpc-server
     build:
       context: ./app
-      dockerfile: Dockerfile.golang
+      dockerfile: ${DOCKERFILE}
     command:
       - -delay
       - "20000"

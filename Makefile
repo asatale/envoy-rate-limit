@@ -1,13 +1,25 @@
 export ROOT_DIR := $(shell pwd)
 
+FRAMEWORK ?= go
+
+
 .PHONY:all
 all: app
 
 
 .PHONY:build
 build:
+ifeq ($(FRAMEWORK), go)
+	@echo "DOCKERFILE=Dockerfile.golang" > .env
 	@docker-compose build
-
+else
+ifeq ($(FRAMEWORK), python)
+	@echo "DOCKERFILE=Dockerfile.python" > .env
+	@docker-compose build
+else
+	$(error "Unsupported framework $(FRAMEWORK)")
+endif
+endif
 
 .PHONY:up
 up:
