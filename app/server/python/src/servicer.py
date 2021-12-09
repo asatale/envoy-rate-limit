@@ -5,9 +5,6 @@ from hello_world_pb2 import HelloRequest, HelloReply
 from hello_world_pb2_grpc import GreeterServicer
 from log import logger
 
-MAX_PARALLISM = 50
-semaphore = asyncio.Semaphore(MAX_PARALLISM)
-
 
 def RPCHandler(func):
     @functools.wraps(func)
@@ -24,10 +21,16 @@ def RPCHandler(func):
 
 
 class Greeter(GreeterServicer):
+    MAX_PARALLISM = 50
+
+    def __init__(self):
+        self.semaphore = asyncio.Semaphore(self.MAX_PARALLISM)
+        super().__init__()
+
     @RPCHandler
     async def SayHello(self,
                        request: HelloRequest,
                        context: grpc.aio.ServicerContext) -> HelloReply:
-        async with semaphore:
+        async with self.semaphore:
             return HelloReply(clientName=request.clientName,
                               seqNum=request.seqNum)

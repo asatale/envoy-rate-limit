@@ -9,7 +9,7 @@ from prometheus import PrometheusServer
 MAX_CONCURRENT_RPCS = 1000
 
 
-async def main():
+async def main(loop):
     async def _shutdown(
             grpc_server: GRPCServer,
             prometheus_server: PrometheusServer):
@@ -39,4 +39,4 @@ async def main():
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(main(loop))
