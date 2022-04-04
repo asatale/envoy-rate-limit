@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z\020./go/hello_world',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\x11hello-world.proto\x12\nhelloworld\"2\n\x0cHelloRequest\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\"0\n\nHelloReply\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\x32I\n\x07Greeter\x12>\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\"\x00\x42\x12Z\x10./go/hello_worldb\x06proto3'
+  serialized_pb=b'\n\x11hello-world.proto\x12\nhelloworld\"2\n\x0cHelloRequest\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\"0\n\nHelloReply\x12\x12\n\nclientName\x18\x01 \x01(\t\x12\x0e\n\x06seqNum\x18\x02 \x01(\x05\x32\x96\x02\n\x07Greeter\x12<\n\x08SayHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply\x12\x45\n\x0fLotsOfGreetings\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply(\x01\x12\x43\n\rLotsOfReplies\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply0\x01\x12\x41\n\tBidiHello\x12\x18.helloworld.HelloRequest\x1a\x16.helloworld.HelloReply(\x01\x30\x01\x42\x12Z\x10./go/hello_worldb\x06proto3'
 )
 
 
@@ -130,13 +130,43 @@ _GREETER = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=135,
-  serialized_end=208,
+  serialized_start=136,
+  serialized_end=414,
   methods=[
   _descriptor.MethodDescriptor(
     name='SayHello',
     full_name='helloworld.Greeter.SayHello',
     index=0,
+    containing_service=None,
+    input_type=_HELLOREQUEST,
+    output_type=_HELLOREPLY,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='LotsOfGreetings',
+    full_name='helloworld.Greeter.LotsOfGreetings',
+    index=1,
+    containing_service=None,
+    input_type=_HELLOREQUEST,
+    output_type=_HELLOREPLY,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='LotsOfReplies',
+    full_name='helloworld.Greeter.LotsOfReplies',
+    index=2,
+    containing_service=None,
+    input_type=_HELLOREQUEST,
+    output_type=_HELLOREPLY,
+    serialized_options=None,
+    create_key=_descriptor._internal_create_key,
+  ),
+  _descriptor.MethodDescriptor(
+    name='BidiHello',
+    full_name='helloworld.Greeter.BidiHello',
+    index=3,
     containing_service=None,
     input_type=_HELLOREQUEST,
     output_type=_HELLOREPLY,

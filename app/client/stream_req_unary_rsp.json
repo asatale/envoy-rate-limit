@@ -1,0 +1,23 @@
+{
+  "proto": "/ghz/proto/hello-world.proto",
+  "call": "helloworld.Greeter.LotsOfGreetings",
+  "insecure": true,
+  "async": true,
+  "dial_timeout" : 5,
+  "timeout": "7s",
+  "total" : 10,
+  "rps" : 50,
+  "concurrency" : 100,
+  "data": [
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" },
+    { "clientName": "{{randomString 8}}", "seqNum": "{{.TimestampUnix}}" }
+  ]
+}

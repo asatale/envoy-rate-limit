@@ -20,6 +20,21 @@ class GreeterStub(object):
                 request_serializer=hello__world__pb2.HelloRequest.SerializeToString,
                 response_deserializer=hello__world__pb2.HelloReply.FromString,
                 )
+        self.LotsOfGreetings = channel.stream_unary(
+                '/helloworld.Greeter/LotsOfGreetings',
+                request_serializer=hello__world__pb2.HelloRequest.SerializeToString,
+                response_deserializer=hello__world__pb2.HelloReply.FromString,
+                )
+        self.LotsOfReplies = channel.unary_stream(
+                '/helloworld.Greeter/LotsOfReplies',
+                request_serializer=hello__world__pb2.HelloRequest.SerializeToString,
+                response_deserializer=hello__world__pb2.HelloReply.FromString,
+                )
+        self.BidiHello = channel.stream_stream(
+                '/helloworld.Greeter/BidiHello',
+                request_serializer=hello__world__pb2.HelloRequest.SerializeToString,
+                response_deserializer=hello__world__pb2.HelloReply.FromString,
+                )
 
 
 class GreeterServicer(object):
@@ -33,11 +48,44 @@ class GreeterServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def LotsOfGreetings(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def LotsOfReplies(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def BidiHello(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_GreeterServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SayHello': grpc.unary_unary_rpc_method_handler(
                     servicer.SayHello,
+                    request_deserializer=hello__world__pb2.HelloRequest.FromString,
+                    response_serializer=hello__world__pb2.HelloReply.SerializeToString,
+            ),
+            'LotsOfGreetings': grpc.stream_unary_rpc_method_handler(
+                    servicer.LotsOfGreetings,
+                    request_deserializer=hello__world__pb2.HelloRequest.FromString,
+                    response_serializer=hello__world__pb2.HelloReply.SerializeToString,
+            ),
+            'LotsOfReplies': grpc.unary_stream_rpc_method_handler(
+                    servicer.LotsOfReplies,
+                    request_deserializer=hello__world__pb2.HelloRequest.FromString,
+                    response_serializer=hello__world__pb2.HelloReply.SerializeToString,
+            ),
+            'BidiHello': grpc.stream_stream_rpc_method_handler(
+                    servicer.BidiHello,
                     request_deserializer=hello__world__pb2.HelloRequest.FromString,
                     response_serializer=hello__world__pb2.HelloReply.SerializeToString,
             ),
@@ -64,6 +112,57 @@ class Greeter(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/helloworld.Greeter/SayHello',
+            hello__world__pb2.HelloRequest.SerializeToString,
+            hello__world__pb2.HelloReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def LotsOfGreetings(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_unary(request_iterator, target, '/helloworld.Greeter/LotsOfGreetings',
+            hello__world__pb2.HelloRequest.SerializeToString,
+            hello__world__pb2.HelloReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def LotsOfReplies(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/helloworld.Greeter/LotsOfReplies',
+            hello__world__pb2.HelloRequest.SerializeToString,
+            hello__world__pb2.HelloReply.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def BidiHello(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/helloworld.Greeter/BidiHello',
             hello__world__pb2.HelloRequest.SerializeToString,
             hello__world__pb2.HelloReply.FromString,
             options, channel_credentials,

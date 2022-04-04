@@ -9,26 +9,25 @@ from prometheus import PrometheusServer
 MAX_CONCURRENT_RPCS = 1000
 
 
-async def main(loop):
-    async def _shutdown(
-            grpc_server: GRPCServer,
-            prometheus_server: PrometheusServer):
-        logger.info("Shutting down servers due to signal callback")
-        await grpc_server.stop()
-        await prometheus_server.stop()
+async def _shutdown(grpc_server: GRPCServer, prometheus_server: PrometheusServer):
+    logger.info("Shutting down servers due to signal callback")
+    await grpc_server.stop()
+    await prometheus_server.stop()
 
+
+async def main(loop):
     logger.info("Starting main application")
     grpc_server = GRPCServer(cfg.addr, MAX_CONCURRENT_RPCS)
     prometheus_server = PrometheusServer(cfg.metric_addr)
 
     # Register signal handlers
-    register_signal_handler(
-        asyncio.get_event_loop(),
-        _shutdown(
-            grpc_server,
-            prometheus_server
-        )
-    )
+    # register_signal_handler(
+    #     asyncio.get_event_loop(),
+    #     _shutdown(
+    #         grpc_server,
+    #         prometheus_server
+    #     )
+    # )
 
     # Start all servers and wait for ever
     await grpc_server.start()

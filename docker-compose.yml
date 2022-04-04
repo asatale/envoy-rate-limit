@@ -6,22 +6,24 @@ services:
       context: ./app
       dockerfile: ${DOCKERFILE}
     command:
+      - -log
+      - "DEBUG"
       - -delay
-      - "2000"
+      - "20000"
       - -dprob
-      - "50"
+      - "0"
       - -cancel
       - -cprob
-      - "50"
+      - "0"
     ports:
       - "50051:50051"
       - "8000:8000"
     networks:
       - envoymesh
-  client:
+  client-1:
     image: obvionaoe/ghz
     command:
-      - --config=/ghz/client/config.json
+      - --config=/ghz/client/unary_req_unary_rsp.json
       - envoy:50051
     volumes:
       - ./app/client:/ghz/client
@@ -31,10 +33,54 @@ services:
       - server-1
     networks:
       - envoymesh
+  client-2:
+    image: obvionaoe/ghz
+    command:
+      - --config=/ghz/client/unary_req_stream_rsp.json
+      - envoy:50051
+    volumes:
+      - ./app/client:/ghz/client
+      - ./app/proto:/ghz/proto
+    depends_on:
+      - envoy
+      - server-1
+    networks:
+      - envoymesh
+  client-3:
+    image: obvionaoe/ghz
+    command:
+      - --config=/ghz/client/stream_req_unary_rsp.json
+      - envoy:50051
+    volumes:
+      - ./app/client:/ghz/client
+      - ./app/proto:/ghz/proto
+    depends_on:
+      - envoy
+      - server-1
+    networks:
+      - envoymesh
+  client-4:
+    image: obvionaoe/ghz
+    command:
+      - --config=/ghz/client/stream_req_stream_rsp.json
+      - envoy:50051
+    volumes:
+      - ./app/client:/ghz/client
+      - ./app/proto:/ghz/proto
+    depends_on:
+      - envoy
+      - server-1
+    networks:
+      - envoymesh      
   envoy:
     image: envoyproxy/envoy:v1.20.0
     ports:
       - "9000:9000"
+    command:
+      - --log-level
+      - debug
+      - --config-path
+      - "/etc/envoy/envoy.yaml"
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
     networks:
