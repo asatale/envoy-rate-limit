@@ -1,6 +1,6 @@
 export ROOT_DIR := $(shell pwd)
 
-FRAMEWORK ?= go
+FRAMEWORK ?= python
 
 
 .PHONY:all

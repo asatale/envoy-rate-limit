@@ -7,7 +7,6 @@ log_levels =  {
     "INFO": logging.INFO,
     "WARN": logging.WARN,
     "ERROR": logging.ERROR,
-    "CRITICAL": logging.CRITICAL,
     "FATAL": logging.FATAL,
     }
 

@@ -1,12 +1,11 @@
 package main
 
 import (
-	"log"
-	"net/http"
-	"os"
-
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog/log"
+	"net/http"
+	"os"
 )
 
 var (
@@ -45,7 +44,7 @@ func startPrometheusServer() error {
 
 	go func() {
 		if err := http.ListenAndServe(":8000", nil); err != nil {
-			log.Fatalf("Failed to start prometheus endpoint")
+			log.Fatal().Msgf("Failed to start prometheus endpoint")
 		}
 	}()
 	return nil

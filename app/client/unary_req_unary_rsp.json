@@ -5,7 +5,7 @@
   "async": true,
   "dial_timeout" : 5,
   "timeout": "7s",
-  "total" : 10,
+  "total" : 10000,
   "rps" : 50,
   "concurrency" : 100,
   "data": {

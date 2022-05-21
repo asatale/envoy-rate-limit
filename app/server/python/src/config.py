@@ -4,7 +4,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Python GRPC server')
 
 parser.add_argument('-log', type=str, default='INFO',
-                    help='Logging level for service. Options: [DEBUG, INFO, WARN, CRITICAL, FATAL, ERROR  ]')
+                    help='Logging level for service. Options: [DEBUG, INFO, WARN, FATAL, ERROR]')
 parser.add_argument('-addr', type=str, default='0.0.0.0:50051',
                     help='Server bind address. Default: 0.0.0.0:50051')
 parser.add_argument('-delay', type=int, default=10,

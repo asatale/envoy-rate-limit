@@ -70,7 +70,6 @@ class ServerInterceptorMiddleWare(ServerInterceptor, metaclass=abc.ABCMeta):
 
 
 class MetricInterceptor(ServerInterceptorMiddleWare):
-
     async def intercept(self, next_method, request, context):
         logger.debug("RPC Request received")
         total_rpc_metric.inc({"kind": "rpc_total"})
@@ -78,20 +77,19 @@ class MetricInterceptor(ServerInterceptorMiddleWare):
 
 
 class CancelInterceptor(ServerInterceptorMiddleWare):
-
     async def intercept(self, next_method, request, context):
         logger.info("Cancelling RPC")
         if cfg.cancel and cfg.cprob > 0:
             rand = random.randint(0, 100)
             if rand <= cfg.cprob:
                 cancel_rpc_metric.inc({"kind": "rpc_cancelled"})
-                await context.abort(grpc.StatusCode.RESOURCE_EXHAUSTED,
-                                    "Policy based RPC cancellation")
+                await context.abort_with_status(grpc.Status(
+                    code=grpc.StatusCode.RESOURCE_EXHAUSTED,
+                    message="Policy based RPC cancellation"))
         return await next_method(request, context)
 
 
 class DelayInterceptor(ServerInterceptorMiddleWare):
-
     async def intercept(self, next_method, request, context):
         logger.info("Delayed RPC response")
         if cfg.delay > 0 and cfg.dprob > 0:
@@ -99,5 +97,4 @@ class DelayInterceptor(ServerInterceptorMiddleWare):
             if rand <= cfg.dprob:
                 delayed_rpc_metric.inc({"kind": "rpc_delated"})
                 await asyncio.sleep(cfg.delay * SECOND_TO_MILLISECOND)
-            result = await next_method(request, context)
-        return result
+        return await next_method(request, context)

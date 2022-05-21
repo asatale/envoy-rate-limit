@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/asatale/envoy-rate-limit/app/server/go/hello_world"
+	"github.com/rs/zerolog/log"
 	"google.golang.org/grpc"
-	"log"
 	"math/rand"
 	"net"
 	"os"
@@ -19,9 +19,11 @@ func init() {
 
 func main() {
 
+	setLogLevel(appCfg.logLevel)
+
 	lis, err := net.Listen("tcp", appCfg.addrValue)
 	if err != nil {
-		log.Fatalf("Failed to start listening: %v", err)
+		log.Fatal().Msgf("Failed to start listening: %v", err)
 	}
 	s := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
@@ -30,23 +32,23 @@ func main() {
 			delayInterceptor,
 		),
 	)
-	hello_world.RegisterGreeterServer(s, &server{})
-	log.Printf("Server listening at %v", lis.Addr())
+	hello_world.RegisterGreeterServer(s, &HelloWorldServer{})
+	log.Info().Msgf("Server listening at %v", lis.Addr())
 
 	sigs := make(chan os.Signal, 1)
 	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
 		sig := <-sigs
-		log.Println("Received signal:", sig)
+		log.Info().Msgf("Received signal:", sig)
 		s.GracefulStop()
-		log.Println("Server gracefully stopped")
+		log.Info().Msgf("Server gracefully stopped")
 	}()
 
 	if err := startPrometheusServer(); err != nil {
-		log.Fatalf("Failed to prometheus metric stub: %v", err)
+		log.Fatal().Msgf("Failed to prometheus metric stub: %v", err)
 	}
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+		log.Fatal().Msgf("Failed to serve: %v", err)
 	}
 }

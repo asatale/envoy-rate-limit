@@ -37,6 +37,8 @@ class Greeter(GreeterServicer):
     async def SayHello(self,
                        request: HelloRequest,
                        context: grpc.aio.ServicerContext) -> HelloReply:
+        ctype = dir(context)
+        logger.debug(f"{ctype}")
         logger.debug(f"Received requests for RPC SayHello")
         async with self.semaphore:
             return HelloReply(clientName=request.clientName,

@@ -73,9 +73,10 @@ services:
     networks:
       - envoymesh      
   envoy:
-    image: envoyproxy/envoy:v1.20.0
+    image: envoyproxy/envoy:v1.22.0
     ports:
       - "9000:9000"
+      - "8081:8081"
     command:
       - --log-level
       - debug
